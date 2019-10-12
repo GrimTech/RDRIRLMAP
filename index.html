@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset='utf-8' />
+<title>Red Dead Redemption II IRL Style Map</title>
+<meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+<script src='https://api.tiles.mapbox.com/mapbox-gl-js/v1.4.1/mapbox-gl.js'></script>
+<link href='https://api.tiles.mapbox.com/mapbox-gl-js/v1.4.1/mapbox-gl.css' rel='stylesheet' />
+<style>
+body { margin:0; padding:0; }
+#map { position:absolute; top:0; bottom:0; width:100%; }
+</style>
+</head>
+<body>
+ 
+<div id='map'></div>
+<script>
+mapboxgl.accessToken = 'pk.eyJ1IjoicGF0cmlja2pyIiwiYSI6ImNqamRhc2ltZzN1Y2oza21uNmV1bTNxam8ifQ.ok5uIroSVBcBY575a_FqJQ';
+var map = new mapboxgl.Map({
+container: 'map', // container id
+style: 'mapbox://styles/patrickjr/ck1mxkohr0dds1cr10jv1gki0', // stylesheet location
+center: [-118.25, 34.05], // starting position [lng, lat]
+zoom: 16.4 // starting zoom
+});
+map.on('load', function() {
+  map.addLayer({
+    "id": "player",
+    "type": "symbol",
+    "source": {
+      "type": "geojson",
+      "data": {
+        "type": "FeatureCollection",
+        "features": [{
+          "type": "Feature",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [-90.057758, 29.963539]
+          }
+        }]
+      }
+    },
+    "layout": {
+      "icon-image": "player",
+      "icon-size": 1.5
+    }
+  })
+  
+  
+  window.addEventListener("deviceorientation", function(event) { 
+    document.getElementById("compass").style.transform = "rotate(" + event.webkitCompassHeading +  "deg)";
+
+    map.setBearing(event.webkitCompassHeading)
+  });
+
+  function success(pos) {
+    map.setCenter([pos.coords.longitude, pos.coords.latitude]);
+    map.getSource('player').setData({
+          "type": "Point",
+          "coordinates": [
+              pos.coords.longitude,
+              pos.coords.latitude
+          ]
+      });
+  }
+
+  function error(err) {
+    console.log(err)
+  }
+
+  navigator.geolocation.watchPosition(success, error, {})
+})
+</script>
+ 
+</body>
+</html>
